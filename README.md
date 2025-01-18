@@ -25,47 +25,33 @@ FIREBASE_appId=
 # Dev Environment Setup
 
 ## First Run
+- Start Docker container
 ```sh
-# START node image
 docker run -it --rm \
-    --name todoapp_server \
+    --name todoapp \
     -p 3000:3000 \
-    -p 9005:9005 \
     -v ./:/app \
     -w /app \
     node:23 \
         /bin/bash
-
-npx create-next-app@14.2.23 _server --tailwind --typescript
-
-npm run dev
-
-docker commit todoapp_server todoapp_server_image
 ```
 
-## Subsequent Runs
+- Install dependencies and start in dev mode
 ```sh
-docker run -it --rm \
-    --name todoapp_server \
-    -p 3000:3000 \
-    -p 9005:9005 \
-    -v ./:/app \
-    -w /app \
-    todoapp_server_image \
-        /bin/bash
+npm install
 
-docker exec -it todoapp_server /bin/bash
+npm run dev
 ```
 
 # Deployment
 
 ```sh
-docker build -t todoapp_server_image .
+docker build -t todoapp_image .
 
 docker run -d \
-    --name todoapp_server \
+    --name todoapp \
     -p 3000:3000 \
-    todoapp_server_image
+    todoapp_image
 ```
 
 - UI
