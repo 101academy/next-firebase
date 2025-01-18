@@ -1,9 +1,8 @@
+'use server'
+
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { Auth, getAuth } from "firebase/auth";
 import { Firestore, getFirestore } from "firebase/firestore";
-import { loadEnvFile } from "process";
-
-loadEnvFile();
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_apiKey,
