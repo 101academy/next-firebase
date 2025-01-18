@@ -1,15 +1,17 @@
 'use client'
 
-import { auth } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
+import { logout } from "@/actions/authActions";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function SignOut() {
 
   const router = useRouter();
-
+  const {setUserInfo} = useAuthContext();
+  
   async function handleSignOut() {
-    await signOut(auth);
+    await logout();
+    setUserInfo(null);
     router.push('/');
   } 
 

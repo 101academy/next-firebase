@@ -1,41 +1,29 @@
 'use client'
 
-import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { login } from "@/actions/authActions";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { useState } from "react";
 
 export default function SignIn() {
     const [loading, setLoading] = useState<boolean>(false);
+    const {setUserInfo} = useAuthContext();
 
     function handleSignIn(event: React.FormEvent<HTMLFormElement>): void {
         event.preventDefault();
-        
+
         let email = event.currentTarget.email.value;
         let password = event.currentTarget.password.value;
 
         setLoading(true);
 
-        signInWithEmailAndPassword(auth, email, password)
+        login(email, password)
             .then((userCredential) => {
+                console.log('login successful');
+                setUserInfo(userCredential)
                 setLoading(false);
             })
             .catch((error) => {
-                setLoading(false);
-            })
-    }
-
-    function handleSignUp() {
-        
-        let email = document.getElementsByName('email')[0] as HTMLInputElement;
-        let password = document.getElementsByName('password')[0] as HTMLInputElement;
-
-        setLoading(true);
-
-        createUserWithEmailAndPassword(auth, email.value, password.value)
-            .then((userCredential) => {
-                setLoading(false);
-            })
-            .catch((error) => {
+                console.error(error);
                 setLoading(false);
             })
     }
@@ -46,7 +34,7 @@ export default function SignIn() {
             <input type="text" name="email" placeholder="Email" required  />
             <input type="password" name="password" placeholder="Password" required />
             <button type="submit">Login</button>
-            <button type="button" onClick={handleSignUp}>Sign Up</button>
+            {/* <a href="/sign-up" >Sign Up</a> */}
             <p>{loading && "Signing In..."}</p>
         </form>
     );

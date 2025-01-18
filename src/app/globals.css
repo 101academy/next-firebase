@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.todo-complete {
+    @apply flex my-5 bg-green-50 line-through;
+}
+.todo-incomplete {
+    @apply flex my-5;
+}

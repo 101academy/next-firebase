@@ -1,48 +1,61 @@
 'use client'
 
-import useAuth from "@/hooks/useAuth";
-import { db } from "@/lib/firebase";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { deleteTodo, updateTodoStatus, updateTodoText } from "@/actions/firebaseActions";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { useTodo } from "@/contexts/TodoListContext";
 
-export default function TodoItem({todo}: {
-    todo: any
+export default function TodoItem({todoItem}: {
+    todoItem: any
 }) {
+    const { updateTodoInContext, removeTodoFromContext } = useTodo();
 
-    const auth = useAuth();
+    const {userInfo} = useAuthContext();
 
-    async function handleCheckbox(e: React.ChangeEvent<HTMLInputElement>) {
-        if (!auth) return;
-        const todoFirebaseRef = doc(db, "users", auth?.uid, "todos", todo.id);
-
+    async function handleCheckbox(e: React.ChangeEvent<HTMLInputElement>, todoId:any) {
+        if (!userInfo) return;
         const checkboxStatus = e.target.checked;
-        await updateDoc(todoFirebaseRef, {"complete": checkboxStatus})
+        const updatedTodoItem = await updateTodoStatus(userInfo.id, todoId, checkboxStatus);
+        if (updatedTodoItem) {
+            updateTodoInContext(updatedTodoItem);
+        }
     }
 
     async function handleTextbox(e: React.FocusEvent<HTMLInputElement>) {
-        if (!auth) return;
-        const todoFirebaseRef = doc(db, "users", auth?.uid, "todos", todo.id);
-        
+        if (!userInfo) return;
         const newTodoValue = e.target.value;
-        await updateDoc(todoFirebaseRef, {"todo": newTodoValue});
+        const updatedTodoItem = await updateTodoText(userInfo.id, todoItem.id, newTodoValue);
+        if (updatedTodoItem) {
+            updateTodoInContext(updatedTodoItem);
+        }
     }
     
-    async function handleDelete() {
-        if (!auth) return;
-        const todoFirebaseRef = doc(db, "users", auth?.uid, "todos", todo.id);
-        await deleteDoc(todoFirebaseRef);
+    async function handleDelete(todoId:string) {
+        if (!userInfo) return;
+        const todoItemIfStillExists = await deleteTodo(userInfo.id, todoItem.id);
+        if (todoItemIfStillExists === null) {
+            removeTodoFromContext(todoId);
+        }
     }
 
     return (
-        <div className="flex my-5">
-            <input type="checkbox" className="m-2" onChange={handleCheckbox}/>
-            <input type="text"
-                defaultValue={todo.todo}
-                className="flex-grow"
-                disabled={todo.completed}
-                onBlur={handleTextbox}
-            />
-            <button type="button" className="m-2" onClick={handleDelete}>x</button>
-        </div>
+        <>
+        { todoItem && 
+            <div className={todoItem.completed? 'todo-complete' : 'todo-incomplete'}>
+                <input type="checkbox" 
+                    className="m-2" 
+                    checked={todoItem.completed} 
+                    onChange={(e) => {handleCheckbox(e, todoItem.id)}}
+                    />
+                <input type="text"
+                    defaultValue={todoItem.todo}
+                    className="flex-grow"
+                    disabled={todoItem.completed}
+                    onBlur={handleTextbox}
+                />
+                <button type="button" className="m-2" onClick={() => handleDelete(todoItem.id)}>x</button>
+            </div>
+        }
+        </>
     );
   }
   

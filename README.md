@@ -1,6 +1,6 @@
 # Goal
 Learn react-next-firebase tech stack by building a TODO app.
-(Following YT Tutorial by `Code Hackery`)
+(Following YT Tutorial by `Code Hackery` + some others on nextjs - server-actions, authentication, etc.)
 
 # Tech Stack
 - React JS
@@ -11,7 +11,16 @@ Learn react-next-firebase tech stack by building a TODO app.
 - Docker
 
 # Secrets
-- Add your Firebase credentials in `src/lib/firebase.ts` file
+- Firebase credentials need to be setup as environment variables in `.env` file
+(although Firebase suggests they can be kept on client side)
+```sh
+FIREBASE_apiKey=
+FIREBASE_authDomain=
+FIREBASE_projectId=
+FIREBASE_storageBucket=
+FIREBASE_messagingSenderId=
+FIREBASE_appId=
+```
 
 # Dev Environment Setup
 
@@ -19,7 +28,7 @@ Learn react-next-firebase tech stack by building a TODO app.
 ```sh
 # START node image
 docker run -it --rm \
-    --name todoapp \
+    --name todoapp_server \
     -p 3000:3000 \
     -p 9005:9005 \
     -v ./:/app \
@@ -27,36 +36,36 @@ docker run -it --rm \
     node:23 \
         /bin/bash
 
-npx create-next-app@14.2.23 todoapp --tailwind --typescript
+npx create-next-app@14.2.23 _server --tailwind --typescript
 
 npm run dev
 
-docker commit todoapp todoapp_image
+docker commit todoapp_server todoapp_server_image
 ```
 
 ## Subsequent Runs
 ```sh
 docker run -it --rm \
-    --name todoapp \
+    --name todoapp_server \
     -p 3000:3000 \
     -p 9005:9005 \
     -v ./:/app \
     -w /app \
-    todoapp_image \
+    todoapp_server_image \
         /bin/bash
 
-docker exec -it todoapp /bin/bash
+docker exec -it todoapp_server /bin/bash
 ```
 
 # Deployment
 
 ```sh
-docker build -t todoapp_image .
+docker build -t todoapp_server_image .
 
 docker run -d \
-    --name todoapp \
+    --name todoapp_server \
     -p 3000:3000 \
-    todoapp_image
+    todoapp_server_image
 ```
 
 - UI
