@@ -7,22 +7,20 @@ import { decrypt, encrypt } from "./utils/cryptography";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-export const register = async(email:string, password:string) => {
+export async function register(email:string, password:string) {
 
     // PENDING: VALIDATE INPUTS
 
     const auth = await getFirebaseAuthRef();
-    if (!auth) return false;
+    if (!auth) return "Error initializing firebase";
 
-    return new Promise((resolve) => {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(() => {
-                resolve(true);
-            })
-            .catch((error) => {
-                resolve(false);
-            });
-    });
+    try {
+        await createUserWithEmailAndPassword(auth, email, password)
+        return true;    
+    } catch(error) {
+        console.error(error);
+        return "Error in createUserWithEmailAndPassword"
+    }
 }
 
 export async function loginAction(email:string, password:string) {

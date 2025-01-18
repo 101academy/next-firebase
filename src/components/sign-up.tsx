@@ -1,26 +1,27 @@
-'use client'
-
 import { register } from "@/actions/authActions";
 import { useState } from "react";
 
 export default function SignUp() {
     const [loading, setLoading] = useState<boolean>(false);
 
-    function handleSignUp() {
+    function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
         
-        let email = document.getElementsByName('email')[0] as HTMLInputElement;
-        let password = document.getElementsByName('password')[0] as HTMLInputElement;
+        let email = event.currentTarget.email.value;
+        let password = event.currentTarget.password.value;
 
         setLoading(true);
 
-        register(email.value, password.value)
-            .then(() => {
+        register(email, password)
+            .then((responseObj) => {
+                if(responseObj == true) {
+                    console.log('registation successful');
+                }
+                else {
+                    console.error(responseObj);
+                }
                 setLoading(false);
-            })
-            .catch((error) => {
-                console.error(error);
-                setLoading(false);
-            })
+            });
     }
 
     return (
