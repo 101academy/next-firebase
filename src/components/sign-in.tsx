@@ -1,12 +1,9 @@
-'use client'
-
-import { login } from "@/actions/authActions";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useState } from "react";
 
 export default function SignIn() {
     const [loading, setLoading] = useState<boolean>(false);
-    const {setUserInfo} = useAuthContext();
+    const {login} = useAuthContext();
 
     function handleSignIn(event: React.FormEvent<HTMLFormElement>): void {
         event.preventDefault();
@@ -15,17 +12,9 @@ export default function SignIn() {
         let password = event.currentTarget.password.value;
 
         setLoading(true);
-
-        login(email, password)
-            .then((userCredential) => {
-                console.log('login successful');
-                setUserInfo(userCredential)
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error(error);
-                setLoading(false);
-            })
+        login(email, password).then(() => {
+            setLoading(false);
+        })
     }
 
     return (

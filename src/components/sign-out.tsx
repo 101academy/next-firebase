@@ -1,18 +1,13 @@
 'use client'
 
-import { logout } from "@/actions/authActions";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
 
 export default function SignOut() {
 
-  const router = useRouter();
-  const {setUserInfo} = useAuthContext();
+  const {logout} = useAuthContext();
   
   async function handleSignOut() {
     await logout();
-    setUserInfo(null);
-    router.push('/');
   } 
 
     return (

@@ -3,7 +3,7 @@
 import { register } from "@/actions/authActions";
 import { useState } from "react";
 
-export default function SignIn() {
+export default function SignUp() {
     const [loading, setLoading] = useState<boolean>(false);
 
     function handleSignUp() {
@@ -14,8 +14,7 @@ export default function SignIn() {
         setLoading(true);
 
         register(email.value, password.value)
-            .then((userCredential) => {
-                console.log('registration successful');
+            .then(() => {
                 setLoading(false);
             })
             .catch((error) => {
