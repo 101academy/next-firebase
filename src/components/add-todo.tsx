@@ -4,24 +4,30 @@ import { addTodo } from "@/actions/firebaseActions";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useTodo } from "@/contexts/TodoListContext";
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
+
 
 export default function AddTodoComponent() {
 
     const {userInfo} = useAuthContext();
     const [loading, setLoading] = useState<boolean>(false);
     const { addTodoToContext } = useTodo();
+    const router = useRouter();
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         let todoText = event.currentTarget.new_todo.value;
 
         setLoading(true);
-        await addTodo(userInfo.id, todoText).then((newTodoItem) => {
-            setLoading(false);
+        addTodo(userInfo.id, todoText).then((newTodoItem) => {
             if (newTodoItem) {
                 addTodoToContext(newTodoItem);
                 (document.getElementById('tb_todo') as HTMLInputElement).value = '';
                 (document.getElementById('tb_todo') as HTMLInputElement).focus();
+                setLoading(false);
+            } else {
+                console.error('Unable to perform action');
+                router.push('/todo-app'); 
             }
         });
     }

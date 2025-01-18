@@ -3,6 +3,7 @@
 import { deleteTodo, updateTodoStatus, updateTodoText } from "@/actions/firebaseActions";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useTodo } from "@/contexts/TodoListContext";
+import { useRouter } from "next/navigation";
 
 export default function TodoItem({todoItem}: {
     todoItem: any
@@ -10,6 +11,7 @@ export default function TodoItem({todoItem}: {
     const { updateTodoInContext, removeTodoFromContext } = useTodo();
 
     const {userInfo} = useAuthContext();
+    const router = useRouter();
 
     async function handleCheckbox(e: React.ChangeEvent<HTMLInputElement>, todoId:any) {
         if (!userInfo) return;
@@ -17,6 +19,9 @@ export default function TodoItem({todoItem}: {
         const updatedTodoItem = await updateTodoStatus(userInfo.id, todoId, checkboxStatus);
         if (updatedTodoItem) {
             updateTodoInContext(updatedTodoItem);
+        } else {
+            console.error('Unable to perform action');
+            router.push('/todo-app'); 
         }
     }
 
@@ -26,14 +31,20 @@ export default function TodoItem({todoItem}: {
         const updatedTodoItem = await updateTodoText(userInfo.id, todoItem.id, newTodoValue);
         if (updatedTodoItem) {
             updateTodoInContext(updatedTodoItem);
+        } else {
+            console.error('Unable to perform action');
+            router.push('/todo-app'); 
         }
     }
     
     async function handleDelete(todoId:string) {
         if (!userInfo) return;
-        const todoItemIfStillExists = await deleteTodo(userInfo.id, todoItem.id);
-        if (todoItemIfStillExists === null) {
+        const reponse = await deleteTodo(userInfo.id, todoItem.id);
+        if (reponse) {
             removeTodoFromContext(todoId);
+        } else {
+            console.error('Unable to perform action');
+            router.push('/todo-app'); 
         }
     }
 
