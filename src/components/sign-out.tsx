@@ -1,18 +1,20 @@
-"use client"
-
-import { signOut } from "next-auth/react";
+import { signOut } from "@/actions/nextAuth"
 
 export default function SignOut() {
 
-  async function handleSignOut() {
-    await signOut();
-  } 
-
     return (
+      <form action={ async() => {
+        "use server"
+        await signOut();
+      }
+      }>
         <button 
-            className="hover:bg-gray-600 my-8 rounded-xl py-2 px-4 text-white bg-black" 
-            onClick={handleSignOut}
-        >Sign Out</button>
+          type="submit"
+          className="hover:bg-gray-600 my-8 rounded-xl py-2 px-4 text-white bg-black" 
+        >
+          Sign Out
+        </button>
+      </form>
     );
   }
   
