@@ -1,3 +1,5 @@
+"use client"
+
 import { register } from "@/actions/authActions";
 
 export default function SignUp() {

@@ -1,5 +1,3 @@
-'use client'
-
 import AddTodoComponent from "@/components/add-todo";
 import SignOut from "@/components/sign-out";
 import TodoList from "@/components/todo-list";

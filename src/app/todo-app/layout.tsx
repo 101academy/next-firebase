@@ -1,13 +1,11 @@
-"use client"
-
+import { auth } from "@/actions/nextAuth";
 import SignIn from "@/components/sign-in";
 import SignUp from "@/components/sign-up";
-import { useSession } from "next-auth/react";
 
-export default function TodoLayout({children}: {
+export default async function TodoLayout({children}: {
     children: React.ReactElement
 }) {
-    const { data: session } = useSession()
+    const session = await auth();
     
     return (
       <>
