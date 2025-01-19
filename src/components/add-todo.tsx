@@ -1,25 +1,27 @@
 'use client'
 
 import { addTodo } from "@/actions/firebaseActions";
-import { useAuthContext } from "@/contexts/AuthContext";
 import { useTodo } from "@/contexts/TodoListContext";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
+import { useSession } from "next-auth/react";
 
 
 export default function AddTodoComponent() {
 
-    const {userInfo} = useAuthContext();
+    const { data: session } = useSession()
+    const userId = session?.user?.id;
+
     const [loading, setLoading] = useState<boolean>(false);
     const { addTodoToContext } = useTodo();
     const router = useRouter();
-
+    
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         let todoText = event.currentTarget.new_todo.value;
 
         setLoading(true);
-        addTodo(userInfo.id, todoText).then((newTodoItem) => {
+        addTodo(userId!, todoText).then((newTodoItem) => {
             if (newTodoItem) {
                 addTodoToContext(newTodoItem);
                 (document.getElementById('tb_todo') as HTMLInputElement).value = '';

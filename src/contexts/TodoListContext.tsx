@@ -1,8 +1,9 @@
 'use client'
+
 import { getUserTodos } from '@/actions/firebaseActions';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {Todo} from '@/models/models';
-import { useAuthContext } from './AuthContext';
+import { useSession } from 'next-auth/react';
 
 interface TodoContextType {
   todos: Todo[];
@@ -19,7 +20,14 @@ const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const {userInfo} = useAuthContext();
+  
+  const { data: session } = useSession()
+  const userInfo = {
+      "id": session?.user?.id ? session?.user?.id : "",
+      "name": session?.user?.name ? session?.user?.name : "",
+      "email": session?.user?.email ? session?.user?.email : "",
+  }
+  
 
   useEffect(() => {
     if (!userInfo) return;

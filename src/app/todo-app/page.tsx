@@ -3,13 +3,9 @@
 import AddTodoComponent from "@/components/add-todo";
 import SignOut from "@/components/sign-out";
 import TodoList from "@/components/todo-list";
-import { useAuthContext } from "@/contexts/AuthContext";
 import { TodoProvider } from "@/contexts/TodoListContext";
 
 export default function TodoPage() {
-
-  const {userInfo} = useAuthContext();
-  if (!userInfo) return;
 
   return (
     <div className="h-screen w-screen p-32 bg-gray-100">

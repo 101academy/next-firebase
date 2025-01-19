@@ -3,10 +3,10 @@
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, updateDoc } from "firebase/firestore"
 import { getFirebaseRef } from "./utils/firebaseUtils"
 import { Todo } from "@/models/models"
-import { getSession } from "./authActions"
+import { auth } from "./nextAuth"
 
 export const addTodo = async (userId:string, todoText:string):Promise<Todo | null> => {
-    if (!(await getSession())) return null;
+    if (!(await auth())) return null;
 
     let todoObj = {
         "todo": todoText,
@@ -24,7 +24,7 @@ export const addTodo = async (userId:string, todoText:string):Promise<Todo | nul
 }
 
 export const getUserTodos = async (userId: string): Promise<Todo[] | null> => {
-    if (!(await getSession())) return null;
+    if (!(await auth())) return null;
     
     const firebaseRef:any = await getFirebaseRef();
     if (!firebaseRef) return null;
@@ -47,7 +47,7 @@ export const getUserTodos = async (userId: string): Promise<Todo[] | null> => {
 }
 
 export const getUserTodo = async (userId:string, todoId:string): Promise<Todo | null> => {
-    if (!(await getSession())) return null;
+    if (!(await auth())) return null;
     
     const firebaseRef:any = await getFirebaseRef();
     if (!firebaseRef) return null;
@@ -70,7 +70,7 @@ export const getUserTodo = async (userId:string, todoId:string): Promise<Todo | 
 }
 
 export const updateTodoStatus = async (userId:string, todoId:string, todoStatus:boolean): Promise<Todo | null> => {
-    if (!(await getSession())) return null;
+    if (!(await auth())) return null;
     
     const firebaseRef:any = await getFirebaseRef();
     if (!firebaseRef) return null;
@@ -82,7 +82,7 @@ export const updateTodoStatus = async (userId:string, todoId:string, todoStatus:
 }
 
 export const updateTodoText = async (userId:string, todoId:string, todoText:string): Promise<Todo | null> => {
-    if (!(await getSession())) return null;
+    if (!(await auth())) return null;
     
     const firebaseRef:any = await getFirebaseRef();
     if (!firebaseRef) return null;
@@ -94,7 +94,7 @@ export const updateTodoText = async (userId:string, todoId:string, todoText:stri
 }
 
 export const deleteTodo = async (userId:string, todoId:string): Promise<boolean | null> => {
-    if (!(await getSession())) return null;
+    if (!(await auth())) return null;
     
     const firebaseRef:any = await getFirebaseRef();
     if (!firebaseRef) return null;

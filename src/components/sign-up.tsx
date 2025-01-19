@@ -1,16 +1,12 @@
 import { register } from "@/actions/authActions";
-import { useState } from "react";
 
 export default function SignUp() {
-    const [loading, setLoading] = useState<boolean>(false);
 
     function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         
         let email = event.currentTarget.email.value;
         let password = event.currentTarget.password.value;
-
-        setLoading(true);
 
         register(email, password)
             .then((responseObj) => {
@@ -20,7 +16,6 @@ export default function SignUp() {
                 else {
                     console.error(responseObj);
                 }
-                setLoading(false);
             });
     }
 
@@ -30,8 +25,6 @@ export default function SignUp() {
             <input type="text" name="email" placeholder="Email" required  />
             <input type="password" name="password" placeholder="Password" required />
             <button type="submit">Register</button>
-            {/* <a href="/to-do">Sign In</a> */}
-            <p>{loading && "Registering..."}</p>
         </form>
     );
   }

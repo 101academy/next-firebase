@@ -1,17 +1,17 @@
-'use client'
+"use client"
 
 import SignIn from "@/components/sign-in";
 import SignUp from "@/components/sign-up";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { useSession } from "next-auth/react";
 
 export default function TodoLayout({children}: {
     children: React.ReactElement
 }) {
-    const {userInfo} = useAuthContext();
+    const { data: session } = useSession()
     
     return (
       <>
-        {userInfo ? 
+        {session ? 
             <>{children}</>
             :
             <div className="w-screen h-screen flex justify-between align-middle bg-gray-100">

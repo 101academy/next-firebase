@@ -1,8 +1,9 @@
 'use client'
 
 import { deleteTodo, updateTodoStatus, updateTodoText } from "@/actions/firebaseActions";
-import { useAuthContext } from "@/contexts/AuthContext";
 import { useTodo } from "@/contexts/TodoListContext";
+import { UserInfo } from "@/models/models";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function TodoItem({todoItem}: {
@@ -10,7 +11,12 @@ export default function TodoItem({todoItem}: {
 }) {
     const { updateTodoInContext, removeTodoFromContext } = useTodo();
 
-    const {userInfo} = useAuthContext();
+    const { data: session } = useSession()
+    const userInfo:UserInfo | null = !session?.user ?  null : {
+        "id": session?.user?.id ? session?.user?.id : "",
+        "name": session?.user?.name ? session?.user?.name : "",
+        "email": session?.user?.email ? session?.user?.email : "",
+    }
     const router = useRouter();
 
     async function handleCheckbox(e: React.ChangeEvent<HTMLInputElement>, todoId:any) {

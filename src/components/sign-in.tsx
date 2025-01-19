@@ -1,20 +1,16 @@
-import { useAuthContext } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { signIn } from "next-auth/react"
 
 export default function SignIn() {
-    const [loading, setLoading] = useState<boolean>(false);
-    const {login} = useAuthContext();
-
-    function handleSignIn(event: React.FormEvent<HTMLFormElement>): void {
+    
+    async function handleSignIn(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         let email = event.currentTarget.email.value;
         let password = event.currentTarget.password.value;
-
-        setLoading(true);
-        login(email, password).then(() => {
-            setLoading(false);
-        })
+        await signIn("credentials", {
+            email: email,
+            password: password
+        });   
     }
 
     return (
@@ -23,8 +19,6 @@ export default function SignIn() {
             <input type="text" name="email" placeholder="Email" required  />
             <input type="password" name="password" placeholder="Password" required />
             <button type="submit">Login</button>
-            {/* <a href="/sign-up" >Sign Up</a> */}
-            <p>{loading && "Signing In..."}</p>
         </form>
     );
   }

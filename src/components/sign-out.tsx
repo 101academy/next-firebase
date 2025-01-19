@@ -1,13 +1,9 @@
-'use client'
-
-import { useAuthContext } from "@/contexts/AuthContext";
+import { signOut } from "next-auth/react";
 
 export default function SignOut() {
 
-  const {logout} = useAuthContext();
-  
   async function handleSignOut() {
-    await logout();
+    await signOut();
   } 
 
     return (
