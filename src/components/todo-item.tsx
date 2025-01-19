@@ -1,56 +1,32 @@
 'use client'
 
-import { deleteTodo, updateTodoStatus, updateTodoText } from "@/actions/firebaseActions";
 import { useTodo } from "@/contexts/TodoListContext";
-import { UserInfo } from "@/models/models";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function TodoItem({todoItem}: {
     todoItem: any
 }) {
-    const { updateTodoInContext, removeTodoFromContext } = useTodo();
-
-    const { data: session } = useSession()
-    const userInfo:UserInfo | null = !session?.user ?  null : {
-        "id": session?.user?.id ? session?.user?.id : "",
-        "name": session?.user?.name ? session?.user?.name : "",
-        "email": session?.user?.email ? session?.user?.email : "",
-    }
-    const router = useRouter();
+    const { updateTodoStatus, updateTodoText, deleteTodo } = useTodo();
 
     async function handleCheckbox(e: React.ChangeEvent<HTMLInputElement>, todoId:any) {
-        if (!userInfo) return;
         const checkboxStatus = e.target.checked;
-        const updatedTodoItem = await updateTodoStatus(userInfo.id, todoId, checkboxStatus);
-        if (updatedTodoItem) {
-            updateTodoInContext(updatedTodoItem);
-        } else {
+        const isUpdateSuccessful = await updateTodoStatus(todoId, checkboxStatus);
+        if (!isUpdateSuccessful) {
             console.error('Unable to perform action');
-            router.push('/todo-app'); 
         }
     }
 
     async function handleTextbox(e: React.FocusEvent<HTMLInputElement>) {
-        if (!userInfo) return;
-        const newTodoValue = e.target.value;
-        const updatedTodoItem = await updateTodoText(userInfo.id, todoItem.id, newTodoValue);
-        if (updatedTodoItem) {
-            updateTodoInContext(updatedTodoItem);
-        } else {
+        const newTodoText = e.target.value;
+        const isUpdateSuccessful = await updateTodoText(todoItem.id, newTodoText);
+        if (!isUpdateSuccessful) {
             console.error('Unable to perform action');
-            router.push('/todo-app'); 
         }
     }
     
     async function handleDelete(todoId:string) {
-        if (!userInfo) return;
-        const reponse = await deleteTodo(userInfo.id, todoItem.id);
-        if (reponse) {
-            removeTodoFromContext(todoId);
-        } else {
+        const isDeletionSuccessful = await deleteTodo(todoItem.id);
+        if (!isDeletionSuccessful) {
             console.error('Unable to perform action');
-            router.push('/todo-app'); 
         }
     }
 

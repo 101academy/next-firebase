@@ -1,19 +1,13 @@
 'use client'
 
-import { addTodo } from "@/actions/firebaseActions";
 import { useTodo } from "@/contexts/TodoListContext";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
-import { useSession } from "next-auth/react";
-
 
 export default function AddTodoComponent() {
 
-    const { data: session } = useSession()
-    const userId = session?.user?.id;
-
     const [loading, setLoading] = useState<boolean>(false);
-    const { addTodoToContext } = useTodo();
+    const { addTodo } = useTodo();
     const router = useRouter();
     
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -21,17 +15,14 @@ export default function AddTodoComponent() {
         let todoText = event.currentTarget.new_todo.value;
 
         setLoading(true);
-        addTodo(userId!, todoText).then((newTodoItem) => {
-            if (newTodoItem) {
-                addTodoToContext(newTodoItem);
-                (document.getElementById('tb_todo') as HTMLInputElement).value = '';
-                (document.getElementById('tb_todo') as HTMLInputElement).focus();
-                setLoading(false);
-            } else {
-                console.error('Unable to perform action');
-                router.push('/todo-app'); 
-            }
-        });
+        if (await addTodo(todoText)) {
+            (document.getElementById('tb_todo') as HTMLInputElement).value = '';
+            (document.getElementById('tb_todo') as HTMLInputElement).focus();
+            setLoading(false);
+        } else {
+            console.error('Unable to perform action');
+            router.push('/todo-app'); 
+        }
     }
 
     return (

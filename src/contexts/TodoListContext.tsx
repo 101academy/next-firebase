@@ -1,15 +1,16 @@
 'use client'
 
-import { getUserTodos } from '@/actions/firebaseActions';
+import { addTodoAction, deleteTodoAction, getUserTodosAction, updateTodoStatusAction, updateTodoTextAction } from '@/actions/firebaseActions';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {Todo} from '@/models/models';
 import { useSession } from 'next-auth/react';
 
 interface TodoContextType {
   todos: Todo[];
-  addTodoToContext: (todo: Todo) => void;
-  updateTodoInContext: (todo: Todo) => void;
-  removeTodoFromContext: (id: string) => void;
+  addTodo: (todo: string) => Promise<boolean>;
+  updateTodoStatus: (id:string, status:boolean) => Promise<boolean>;
+  updateTodoText: (td:string, text:string) => Promise<boolean>;
+  deleteTodo: (id: string) => Promise<boolean>;
 }
 
 interface TodoProviderProps {
@@ -31,7 +32,7 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (!userInfo) return;
-    getUserTodos(userInfo.id).then((todoList) => {
+    getUserTodosAction().then((todoList) => {
       if (todoList) {
         setTodos(todoList);
       }
@@ -39,24 +40,52 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
     
   }, []);
 
-  const addTodoToContext = (todo: Todo) => {
-    setTodos([...todos, todo]);
+  const addTodo = async (todo: string):Promise<boolean> => {
+    const newTodoItem = await addTodoAction(todo);
+    if (newTodoItem) {
+      setTodos([...todos, newTodoItem]);
+      return true;
+    }
+    return false;
   };
 
-  const updateTodoInContext = (updatedTodo: Todo) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === updatedTodo.id ? updatedTodo : todo
-      )
-    );
+  const updateTodoStatus = async (id:string, status:boolean):Promise<boolean> => {
+    const updatedTodoItem = await updateTodoStatusAction(id, status);
+    if (updatedTodoItem) {
+      setTodos(
+        todos.map((todo) =>
+          todo.id === updatedTodoItem.id ? updatedTodoItem : todo
+        )
+      );
+      return true;
+    }
+    return false;
   };
 
-  const removeTodoFromContext = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id != id));
+  const updateTodoText = async (id:string, text:string):Promise<boolean> => {
+    const updatedTodoItem = await updateTodoTextAction(id, text);
+    if (updatedTodoItem) {
+      setTodos(
+        todos.map((todo) =>
+          todo.id === updatedTodoItem.id ? updatedTodoItem : todo
+        )
+      );
+      return true;
+    }
+    return false;
+  };
+
+  const deleteTodo = async (id: string):Promise<boolean> => {
+    const deletionStatus = await deleteTodoAction(id);
+    if (deletionStatus) {
+      setTodos(todos.filter((todo) => todo.id != id));
+      return true;
+    }
+    return false;
   };
 
   return (
-    <TodoContext.Provider value={{ todos, addTodoToContext, updateTodoInContext, removeTodoFromContext }}>
+    <TodoContext.Provider value={{ todos, addTodo, updateTodoStatus, updateTodoText, deleteTodo }}>
       {children}
     </TodoContext.Provider>
   );
